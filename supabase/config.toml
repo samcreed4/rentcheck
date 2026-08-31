@@ -1,0 +1,4 @@
+project_id = "rentcheck"
+
+[functions.notify-landlord]
+verify_jwt = false
