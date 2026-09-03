@@ -170,7 +170,8 @@ Deno.serve(async (req: Request) => {
       `RentCheck: New maintenance request at ${address}.\n` +
       `Category: ${request.category}\n` +
       `Description: ${request.description}\n` +
-      `Submitted: ${submittedAt}`
+      `Submitted: ${submittedAt}\n` +
+      `Reply STOP to opt out, HELP for help.`
 
     let smsResult: { ok: boolean; detail: string }
 

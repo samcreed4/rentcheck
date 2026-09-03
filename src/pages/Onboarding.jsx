@@ -13,6 +13,7 @@ const emptyForm = {
   landlordName: '',
   landlordEmail: '',
   landlordPhone: '',
+  landlordSmsConsent: false,
 }
 
 export default function Onboarding() {
@@ -69,6 +70,14 @@ export default function Onboarding() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
+
+    if (form.landlordPhone && !form.landlordSmsConsent) {
+      setError(
+        'Please confirm your landlord has agreed to receive text notifications, or leave the phone field blank.',
+      )
+      return
+    }
+
     setSaving(true)
 
     const { data: property, error: propertyError } = await supabase
@@ -234,7 +243,29 @@ export default function Onboarding() {
               value={form.landlordPhone}
               onChange={update('landlordPhone')}
             />
+            <p className="mt-1 text-xs text-slate-400">
+              We'll text this number when you submit a maintenance request.
+            </p>
           </div>
+
+          {form.landlordPhone && (
+            <div className="flex items-start gap-2 rounded-lg bg-slate-50 p-3">
+              <input
+                id="landlordSmsConsent"
+                type="checkbox"
+                required
+                checked={form.landlordSmsConsent}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, landlordSmsConsent: e.target.checked }))
+                }
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+              />
+              <label htmlFor="landlordSmsConsent" className="text-xs text-slate-600">
+                I confirm my landlord has agreed to receive text message notifications from
+                RentCheck about the maintenance requests I submit.
+              </label>
+            </div>
+          )}
         </fieldset>
 
         <button type="submit" disabled={saving} className="btn-primary w-full">

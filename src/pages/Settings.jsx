@@ -50,6 +50,9 @@ export default function Settings() {
         landlordName: landlord?.name ?? '',
         landlordEmail: landlord?.email ?? '',
         landlordPhone: landlord?.phone ?? '',
+        // Not persisted anywhere yet, so this always starts unchecked —
+        // re-confirm consent any time the landlord phone number is saved.
+        landlordSmsConsent: false,
       })
       setLoading(false)
     }
@@ -67,6 +70,14 @@ export default function Settings() {
     e.preventDefault()
     setError('')
     setSuccess('')
+
+    if (form.landlordPhone && !form.landlordSmsConsent) {
+      setError(
+        'Please confirm your landlord has agreed to receive text notifications, or leave the phone field blank.',
+      )
+      return
+    }
+
     setSaving(true)
 
     const { error: propertyError } = await supabase
@@ -260,7 +271,29 @@ export default function Settings() {
               value={form.landlordPhone}
               onChange={update('landlordPhone')}
             />
+            <p className="mt-1 text-xs text-slate-400">
+              We'll text this number when you submit a maintenance request.
+            </p>
           </div>
+
+          {form.landlordPhone && (
+            <div className="flex items-start gap-2 rounded-lg bg-slate-50 p-3">
+              <input
+                id="landlordSmsConsent"
+                type="checkbox"
+                required
+                checked={form.landlordSmsConsent}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, landlordSmsConsent: e.target.checked }))
+                }
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+              />
+              <label htmlFor="landlordSmsConsent" className="text-xs text-slate-600">
+                I confirm my landlord has agreed to receive text message notifications from
+                RentCheck about the maintenance requests I submit.
+              </label>
+            </div>
+          )}
         </fieldset>
 
         <button type="submit" disabled={saving} className="btn-primary w-full">
